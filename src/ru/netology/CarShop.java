@@ -11,7 +11,7 @@ public class CarShop {
     Lock lock = new ReentrantLock(true);
     Condition condition = lock.newCondition();
 
-    public Car buyNewCar() {
+    public void buyNewCar() {
         try {
             lock.lock();
             System.out.println(Thread.currentThread().getName() + " зашел в магазин");
@@ -23,22 +23,27 @@ public class CarShop {
             }
             Thread.sleep(customerTimeOut);
             System.out.println(Thread.currentThread().getName() + " уехал на новой " + getCarList().get(0).getName());
+            getCarList().remove(0);
         } catch (InterruptedException exception) {
             exception.printStackTrace();
         } finally {
             lock.unlock();
         }
-        return getCarList().remove(0);
+
     }
 
     public void receiveCar() {
+        int carCount = 10;
         try {
             lock.lock();
-            System.out.println(Thread.currentThread().getName() + " поставил в салон новое авто");
+            System.out.println(Thread.currentThread().getName() + " поставил в салон новые авто");
             int getCarTimeOut = 3000;
             Thread.sleep(getCarTimeOut);
-            carList.add(new Car("Toyota"));
-            condition.signal();
+            for (int i = 0; i < carCount; i++) {
+                carList.add(new Car("Toyota"));
+                condition.signal();
+            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
